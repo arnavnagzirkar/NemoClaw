@@ -354,10 +354,9 @@ $ nemoclaw onboard
 `nemoclaw <name> connect` checks the OpenShell gateway before it tries dashboard forwarding, SSH, or inference repair.
 If the gateway is not reachable, the command exits early and prints recovery guidance.
 
-Start the gateway or resume onboarding, then retry:
+Resume onboarding or reconnect:
 
 ```console
-$ openshell gateway start --name nemoclaw
 $ nemoclaw onboard --resume
 $ nemoclaw <name> connect
 ```
@@ -531,12 +530,12 @@ Follow these steps to reconnect.
 
    If the sandbox shows `Ready`, skip to step 4.
 
-1. Restart the gateway (if needed).
+1. Resume onboarding (if needed).
 
-   If the sandbox is not listed or the command fails, restart the OpenShell gateway:
+   If the sandbox is not listed or the command fails, resume onboarding:
 
    ```console
-   $ openshell gateway start --name nemoclaw
+   $ nemoclaw onboard --resume
    ```
 
    Wait a few seconds, then re-check with `openshell sandbox list`.
@@ -621,10 +620,9 @@ $ nemoclaw <name> rebuild
 ### Sandbox creation reports a TLS certificate mismatch
 
 If sandbox creation reports a TLS or certificate mismatch, the OpenShell gateway certificate may have changed since the CLI last trusted it.
-Refresh the gateway trust and then resume onboarding:
+Resume onboarding to re-establish gateway trust:
 
 ```console
-$ openshell gateway trust -g nemoclaw
 $ nemoclaw onboard --resume
 ```
 
@@ -1150,11 +1148,11 @@ Run `fix-coredns.sh` to point CoreDNS at the container gateway IP instead, then 
 ### `k3s` cannot find a freshly built image
 
 After building a new sandbox image, `k3s` inside the gateway container sometimes fails to pull it even though the image exists on the host.
-Destroy and restart the gateway, then re-run setup.
+Remove the gateway and re-run onboarding, then re-run setup.
 
 ```console
-$ openshell gateway destroy
-$ openshell gateway start
+$ openshell gateway remove nemoclaw
+$ nemoclaw onboard --resume
 ```
 
 ### GPU passthrough on Spark
