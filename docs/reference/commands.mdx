@@ -154,7 +154,7 @@ $ BRAVE_API_KEY=... \
 
 `BRAVE_API_KEY` enables Brave Search in non-interactive mode and also enables `web_fetch`.
 If Brave Search key validation fails in non-interactive mode, onboarding prints a warning, skips web search setup, and continues with the rest of the sandbox setup.
-After fixing the key, re-enable web search with `nemoclaw config web-search`.
+After fixing the key, re-enable web search with `nemoclaw <name> config set --key web.backend --value brave`.
 
 The wizard prompts for a sandbox name.
 Names must be 1 to 63 characters, lowercase, start with a letter, contain only letters, numbers, and internal hyphens, and end with a letter or number.
@@ -785,6 +785,57 @@ The sandbox must be running for the backup step to succeed.
 If an archive command reports partial output while still producing usable data, `rebuild` keeps the captured backup entries and reports only the manifest-defined paths that could not be archived.
 If any required state path still cannot be backed up, `rebuild` exits before destroying the original sandbox.
 After restore, the command runs `openclaw doctor --fix` for cross-version structure repair.
+
+### `nemoclaw <name> shields status`
+
+Show the current shields state for a sandbox.
+Reports whether shields are up (config locked, restrictive network policy applied) or down (default mutable state), and whether a timed auto-restore is pending.
+
+```console
+$ nemoclaw my-assistant shields status
+```
+
+### `nemoclaw <name> shields up`
+
+Raise sandbox security shields.
+Locks the sandbox configuration and applies a restrictive network policy so sensitive workloads cannot be reconfigured at runtime.
+Restores shields from the saved snapshot if one exists.
+
+```console
+$ nemoclaw my-assistant shields up
+```
+
+### `nemoclaw <name> shields down`
+
+Temporarily lower sandbox security shields.
+Returns the sandbox to the default mutable state.
+Use `--timeout` to set a duration after which shields are automatically restored.
+
+```console
+$ nemoclaw my-assistant shields down [--timeout <duration>] [--reason <text>] [--policy permissive]
+```
+
+| Flag | Description |
+|------|-------------|
+| `--timeout <duration>` | Duration before shields are automatically restored (for example `5m`, `1h`) |
+| `--reason <text>` | Reason for lowering shields (recorded in the audit log) |
+| `--policy <name>` | Policy to apply while shields are down (default: `permissive`) |
+
+### `nemoclaw <name> config get`
+
+Read the sanitized agent configuration for a sandbox.
+The output redacts secrets so it is safe to share in bug reports.
+Use `--key` to read a single dotpath from the config, and `--format` to control output format.
+
+```console
+$ nemoclaw my-assistant config get
+$ nemoclaw my-assistant config get --key model --format yaml
+```
+
+| Flag | Description |
+|------|-------------|
+| `--key <dotpath>` | Dotpath to read from the sanitized config (for example `model`, `web.backend`) |
+| `--format json\|yaml` | Output format (default: `json`) |
 
 ### `nemoclaw update`
 
