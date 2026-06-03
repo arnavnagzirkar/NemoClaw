@@ -14,7 +14,7 @@ skill:
 Workspace files define your agent's personality, memory, and user context.
 They persist across sandbox restarts but are **permanently deleted** when you run `nemoclaw <name> destroy`.
 
-This guide covers snapshot commands, manual backup with CLI commands, and an automated script.
+This guide covers snapshot commands, manual backup with CLI commands, and the `nemoclaw backup-all` command.
 
 ## When to Back Up
 
@@ -105,31 +105,17 @@ $ openshell sandbox upload "$SANDBOX" "$BACKUP_DIR/MEMORY.md" /sandbox/.openclaw
 $ openshell sandbox upload "$SANDBOX" "$BACKUP_DIR/memory/" /sandbox/.openclaw/workspace/memory/
 ```
 
-## Using the Backup Script
+## Backing Up All Sandboxes
 
-The repository includes a convenience script at `scripts/backup-workspace.sh`.
-
-### Backup
-
-```console
-$ ./scripts/backup-workspace.sh backup my-assistant
-Backing up workspace from sandbox 'my-assistant'...
-Backup saved to /home/user/.nemoclaw/backups/20260320-120000/ (6 items)
-```
-
-### Restore
-
-Restore from the most recent backup:
+Back up every registered, running sandbox in one step (typically before
+running `nemoclaw update` or `nemoclaw upgrade-sandboxes`):
 
 ```console
-$ ./scripts/backup-workspace.sh restore my-assistant
+$ nemoclaw backup-all
 ```
 
-Restore from a specific timestamp:
-
-```console
-$ ./scripts/backup-workspace.sh restore my-assistant 20260320-120000
-```
+This walks all sandboxes registered on the host, calls `snapshot create` on
+each, and writes the bundles under `~/.nemoclaw/rebuild-backups/<name>/`.
 
 ## Verifying a Backup
 
